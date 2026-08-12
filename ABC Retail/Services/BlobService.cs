@@ -1,4 +1,5 @@
 ﻿using ABC_Retail.Models;
+using Azure;
 using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -109,22 +110,29 @@ namespace ABC_Retail.Services
 
             if (newImageFile != null && newImageFile.Length > 0)
             {
-                // 1. Delete old image from Blob Storage if it exists
+                // 1. Delete old image if it exists
                 if (!string.IsNullOrEmpty(product.ImageUrl))
                 {
-                    var uri = new Uri(product.ImageUrl);
-                    var oldFileName = Path.GetFileName(uri.LocalPath);
-                    var oldBlobClient = _blobContainerClient.GetBlobClient(oldFileName);
-                    await oldBlobClient.DeleteIfExistsAsync();
+                    try
+                    {
+                        var uri = new Uri(product.ImageUrl);
+                        var oldFileName = Path.GetFileName(uri.LocalPath);
+                        var oldBlobClient = _blobContainerClient.GetBlobClient(oldFileName);
+                        await oldBlobClient.DeleteIfExistsAsync();
+                    }
+                    catch
+                    {
+                        // Ignore invalid URI format issues
+                    }
                 }
 
-                // 2. Upload new image and assign new URL
+                // 2. Upload new image
                 string newImageUrl = await UploadImageAsync(newImageFile);
                 product.ImageUrl = newImageUrl;
             }
 
-            // 3. Update entity in Azure Table Storage
-            await _productTableClient.UpdateEntityAsync(product, product.ETag, TableUpdateMode.Replace);
+            // 3. Update entity using ETag.All to bypass empty ETag concurrency checks
+            await _productTableClient.UpdateEntityAsync(product, ETag.All, TableUpdateMode.Replace);
         }
     }
 }

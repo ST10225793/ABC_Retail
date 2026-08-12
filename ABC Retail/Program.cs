@@ -7,6 +7,8 @@ builder.Services.AddSingleton<ABC_Retail.Services.BlobService>();
 
 builder.Services.AddSingleton<ABC_Retail.Services.QueueService>();
 
+builder.Services.AddSingleton<ABC_Retail.Services.FileService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

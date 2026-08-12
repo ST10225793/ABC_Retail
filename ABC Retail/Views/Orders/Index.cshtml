@@ -1,7 +1,7 @@
-﻿@model IEnumerable<ABC_Retail.Models.QueueMessageModel>
+﻿@model ABC_Retail.Models.InventoryViewModel
 
 @{
-    ViewData["Title"] = "Inventory Queue Manager";
+    ViewData["Title"] = "Inventory Manager";
 }
 
 <div class="container py-3">
@@ -9,7 +9,7 @@
         <h2 class="fw-bold" style="color: var(--hk-dark-pink);">
             <i class="fa-solid fa-boxes-stacked me-2"></i>Inventory & Order Queue Manager
         </h2>
-        <p class="text-muted">Track real-time order dispatching and processing events.</p>
+        <p class="text-muted">Manage stock quantities and monitor real-time order processing events in Azure Queue Storage.</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -20,88 +20,114 @@
         </div>
     }
 
+    <!-- Stock Control Section -->
+    <div class="card hk-card p-3 mb-4">
+        <h5 class="fw-bold mb-3" style="color: var(--hk-dark-pink);">
+            <i class="fa-solid fa-warehouse me-2"></i>Product Stock Quantities
+        </h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: var(--hk-card-bg); color: var(--hk-text);">
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Current Stock</th>
+                        <th>Adjust Stock (Triggers Queue)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Products.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No products available. Add products in the Product Catalog.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var prod in Model.Products)
+                        {
+                            <tr>
+                                <td>
+                                    <img src="@prod.ImageUrl" alt="@prod.Name" class="rounded-3 me-2" style="width: 40px; height: 40px; object-fit: cover;" />
+                                    <strong>@prod.Name</strong>
+                                </td>
+                                <td>R @prod.Price.ToString("F2")</td>
+                                <td>
+                                    <span class="badge @(prod.StockQuantity < 5 ? "bg-danger" : "bg-success") fs-6 rounded-pill">
+                                        @prod.StockQuantity units
+                                    </span>
+                                </td>
+                                <td>
+                                    <form asp-controller="Products" asp-action="AdjustStock" method="post" class="d-inline">
+                                        <input type="hidden" name="partitionKey" value="@prod.PartitionKey" />
+                                        <input type="hidden" name="rowKey" value="@prod.RowKey" />
+                                        <input type="hidden" name="changeAmount" value="-1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger me-1 rounded-pill">
+                                            <i class="fa-solid fa-minus"></i> Sell 1 Unit
+                                        </button>
+                                    </form>
+                                    <form asp-controller="Products" asp-action="AdjustStock" method="post" class="d-inline">
+                                        <input type="hidden" name="partitionKey" value="@prod.PartitionKey" />
+                                        <input type="hidden" name="rowKey" value="@prod.RowKey" />
+                                        <input type="hidden" name="changeAmount" value="5" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success rounded-pill">
+                                            <i class="fa-solid fa-plus"></i> Restock +5
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <div class="row g-4">
-        <!-- Add Queue Message Form -->
-        <div class="col-lg-5">
-            <div class="card hk-card p-4">
-                <h5 class="fw-bold mb-3" style="color: var(--hk-dark-pink);">
-                    <i class="fa-solid fa-plus-circle me-2"></i>Queue Order Event
-                </h5>
+        <!-- Manual Queue Injector -->
+        <div class="col-lg-4">
+            <div class="card hk-card p-3">
+                <h6 class="fw-bold mb-2" style="color: var(--hk-dark-pink);">
+                    <i class="fa-solid fa-paper-plane me-2"></i>Manual Queue Message
+                </h6>
                 <form asp-action="Create" method="post">
-                    <div class="mb-3">
-                        <label class="form-label small fw-bold">Order Event Message</label>
-                        <input name="messageText" class="form-control rounded-3" placeholder="e.g. Processing Order #ORD-1001 for Hello Kitty Plushie" required />
+                    <div class="mb-2">
+                        <input name="messageText" class="form-control rounded-3" placeholder="e.g. Processing order #1001" required />
                     </div>
-                    <button type="submit" class="btn hk-btn w-100">
-                        <i class="fa-solid fa-paper-plane me-2"></i>Send Message to Queue
-                    </button>
+                    <button type="submit" class="btn hk-btn btn-sm w-100">Send Custom Queue Message</button>
                 </form>
-
-                <hr class="my-4" />
-
-                <div class="small text-muted">
-                    <p class="fw-bold mb-1">Sample Messages for Rubric Evidence:</p>
-                    <ul class="ps-3 mb-0">
-                        <li>"Processing order #1001"</li>
-                        <li>"Uploading image: product1.jpg"</li>
-                        <li>"Inventory updated for Hello Kitty Mug"</li>
-                        <li>"Order #1002 dispatched via Express Shipping"</li>
-                        <li>"Stock count verified for Pink Blanket"</li>
-                    </ul>
-                </div>
             </div>
         </div>
 
-        <!-- Active Queue Messages List -->
-        <div class="col-lg-7">
+        <!-- Live Queue List -->
+        <div class="col-lg-8">
             <div class="card hk-card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0" style="color: var(--hk-dark-pink);">
-                        <i class="fa-solid fa-list-check me-2"></i>Active Queue Messages
-                    </h5>
-                    @if (Model.Any())
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0" style="color: var(--hk-dark-pink);">
+                        <i class="fa-solid fa-list-check me-2"></i>Live Azure Queue Events
+                    </h6>
+                    @if (Model.QueueMessages.Any())
                     {
-                        <form asp-action="Clear" method="post" onsubmit="return confirm('Clear all messages from the queue?');">
-                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
-                                <i class="fa-solid fa-trash-can me-1"></i> Clear Queue
-                            </button>
+                        <form asp-action="Clear" method="post" onsubmit="return confirm('Clear all messages from queue?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">Clear Queue</button>
                         </form>
                     }
                 </div>
-
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead style="background-color: var(--hk-card-bg); color: var(--hk-text);">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead>
                             <tr>
-                                <th>Message Content</th>
+                                <th>Message</th>
                                 <th>Timestamp</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @if (!Model.Any())
+                            @foreach (var msg in Model.QueueMessages)
                             {
                                 <tr>
-                                    <td colspan="2" class="text-center text-muted py-4">
-                                        No active messages in the queue. Add at least 5 messages for assessment evidence.
-                                    </td>
+                                    <td><small><strong>@msg.MessageText</strong></small></td>
+                                    <td><small class="text-muted">@(msg.InsertedOn.HasValue ? msg.InsertedOn.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</small></td>
                                 </tr>
-                            }
-                            else
-                            {
-                                @foreach (var msg in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            <i class="fa-solid fa-envelope me-2 text-muted"></i>
-                                            <strong>@msg.MessageText</strong>
-                                        </td>
-                                        <td>
-                                            <small class="text-muted">
-                                                @(msg.InsertedOn.HasValue ? msg.InsertedOn.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")
-                                            </small>
-                                        </td>
-                                    </tr>
-                                }
                             }
                         </tbody>
                     </table>

@@ -24,6 +24,11 @@ namespace ABC_Retail.Models
         [DataType(DataType.Currency)]
         public double Price { get; set; }
 
+        [Required]
+        [Range(0, 10000)]
+        [Display(Name = "Stock Quantity")]
+        public int StockQuantity { get; set; } = 10;
+
         [Display(Name = "Image URL")]
         public string ImageUrl { get; set; } = string.Empty;
     }

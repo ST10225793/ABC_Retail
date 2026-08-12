@@ -100,5 +100,28 @@ namespace ABC_Retail.Controllers
 
             return View(product);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdjustStock(string partitionKey, string rowKey, int changeAmount)
+        {
+            var product = await _blobService.GetProductAsync(partitionKey, rowKey);
+            if (product != null)
+            {
+                product.StockQuantity += changeAmount;
+                if (product.StockQuantity < 0) product.StockQuantity = 0;
+
+                await _blobService.UpdateProductAsync(product, null);
+
+                // Automated Queue Trigger on Quantity Change
+                string actionType = changeAmount < 0 ? "DISPATCH / DECREASE" : "RESTOCK / INCREASE";
+                string queueMsg = $"STOCK_ADJUSTMENT | Item: {product.Name} | Action: {actionType} ({changeAmount}) | Remaining Stock: {product.StockQuantity}";
+                await _queueService.SendMessageAsync(queueMsg);
+
+                TempData["SuccessMessage"] = $"Stock updated for {product.Name}! Queue event triggered.";
+            }
+
+            return RedirectToAction("Index", "Orders");
+        }
     }
 }

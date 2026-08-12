@@ -1,4 +1,5 @@
 ﻿using ABC_Retail.Models;
+using Azure;
 using Azure.Data.Tables;
 
 namespace ABC_Retail.Services
@@ -61,7 +62,7 @@ namespace ABC_Retail.Services
         public async Task UpdateCustomerAsync(CustomerProfile profile)
         {
             profile.PartitionKey = "Customer";
-            await _tableClient.UpdateEntityAsync(profile, profile.ETag, TableUpdateMode.Replace);
+            await _tableClient.UpdateEntityAsync(profile, ETag.All, TableUpdateMode.Replace);
         }
     }
 }
