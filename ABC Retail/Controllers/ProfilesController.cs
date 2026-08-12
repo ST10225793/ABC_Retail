@@ -28,12 +28,21 @@ namespace ABC_Retail.Controllers
             if (ModelState.IsValid)
             {
                 await _tableService.AddCustomerAsync(profile);
-                TempData["SuccessMessage"] = "Customer profile successfully saved to Azure Table Storage!";
+                TempData["SuccessMessage"] = "Customer profile successfully saved!";
                 return RedirectToAction(nameof(Index));
             }
 
             var profiles = await _tableService.GetAllCustomersAsync();
             return View("Index", profiles);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
+        {
+            await _tableService.DeleteCustomerAsync(partitionKey, rowKey);
+            TempData["SuccessMessage"] = "Customer profile deleted successfully!";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

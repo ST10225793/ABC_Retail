@@ -72,5 +72,20 @@ namespace ABC_Retail.Services
 
             return products;
         }
+
+        public async Task DeleteProductAsync(string partitionKey, string rowKey, string imageUrl)
+        {
+            // 1. Delete entity record from Azure Table Storage
+            await _productTableClient.DeleteEntityAsync(partitionKey, rowKey);
+
+            // 2. Delete corresponding image file from Azure Blob Storage
+            if (!string.IsNullOrEmpty(imageUrl))
+            {
+                var uri = new Uri(imageUrl);
+                var fileName = Path.GetFileName(uri.LocalPath);
+                var blobClient = _blobContainerClient.GetBlobClient(fileName);
+                await blobClient.DeleteIfExistsAsync();
+            }
+        }
     }
 }

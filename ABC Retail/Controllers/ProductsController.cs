@@ -42,5 +42,14 @@ namespace ABC_Retail.Controllers
             var products = await _blobService.GetAllProductsAsync();
             return View("Index", products);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey, string imageUrl)
+        {
+            await _blobService.DeleteProductAsync(partitionKey, rowKey, imageUrl);
+            TempData["SuccessMessage"] = "Product and image deleted successfully!";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
