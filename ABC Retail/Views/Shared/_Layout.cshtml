@@ -20,6 +20,13 @@
                 background-color: var(--hk-pink-bg);
                 color: var(--hk-text);
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1;
             }
 
             .navbar-custom {
@@ -34,20 +41,6 @@
                 font-size: 1.5rem;
             }
 
-            .nav-link {
-                color: var(--hk-text) !important;
-                font-weight: 600;
-                margin: 0 5px;
-                border-radius: 15px;
-                padding: 8px 16px !important;
-                transition: all 0.3s ease;
-            }
-
-            .nav-link:hover {
-                background-color: var(--hk-card-bg);
-                color: var(--hk-dark-pink) !important;
-            }
-
             .hk-card {
                 background-color: #ffffff;
                 border: 2px solid var(--hk-accent-pink);
@@ -56,25 +49,75 @@
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
             }
 
-            .hk-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 10px 18px rgba(255, 105, 180, 0.3);
-            }
+                .hk-card:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 10px 18px rgba(255, 105, 180, 0.3);
+                }
 
             .hk-btn {
                 background-color: var(--hk-dark-pink);
                 color: #ffffff;
                 border: none;
                 border-radius: 20px;
-                padding: 10px 24px;
+                padding: 8px 16px;
                 font-weight: 600;
+                font-size: 0.9rem;
                 box-shadow: 0 4px 8px rgba(255, 105, 180, 0.4);
                 transition: all 0.3s ease;
             }
 
-            .hk-btn:hover {
-                background-color: var(--hk-deep-rose);
-                color: #ffffff;
+                .hk-btn:hover {
+                    background-color: var(--hk-deep-rose);
+                    color: #ffffff;
+                }
+
+            .btn-hamburger {
+                background-color: var(--hk-card-bg);
+                border: 2px solid var(--hk-accent-pink);
+                color: var(--hk-dark-pink);
+                border-radius: 12px;
+                font-size: 1.25rem;
+                padding: 6px 14px;
+            }
+
+                .btn-hamburger:hover {
+                    background-color: var(--hk-accent-pink);
+                    color: #ffffff;
+                }
+
+            .offcanvas-hk {
+                background-color: #ffffff;
+                border-right: 4px solid var(--hk-accent-pink);
+            }
+
+            .offcanvas-title {
+                color: var(--hk-dark-pink);
+                font-weight: 700;
+            }
+
+            .drawer-nav-link {
+                color: var(--hk-text);
+                font-weight: 600;
+                padding: 12px 16px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                text-decoration: none;
+                margin-bottom: 8px;
+                transition: all 0.2s ease;
+            }
+
+                .drawer-nav-link:hover {
+                    background-color: var(--hk-card-bg);
+                    color: var(--hk-dark-pink);
+                    transform: translateX(4px);
+                }
+
+            .drawer-footer {
+                background-color: var(--hk-card-bg);
+                border-top: 2px dashed var(--hk-accent-pink);
+                border-radius: 15px;
+                padding: 15px;
             }
 
             footer {
@@ -82,52 +125,75 @@
                 border-top: 2px solid var(--hk-accent-pink);
                 color: var(--hk-text);
                 padding: 15px 0;
-                margin-top: 40px;
             }
     </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light navbar-custom">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <i class="fa-solid fa-ribbon me-2"></i>ABC Retail
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
+        <nav class="navbar navbar-custom">
+            <div class="container d-flex align-items-center justify-content-start">
+                <button class="btn btn-hamburger me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                    <i class="fa-solid fa-bars"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 ms-auto justify-content-end">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-1"></i> Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Profiles" asp-action="Index"><i class="fa-solid fa-users me-1"></i> Profiles & Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Media" asp-action="Index"><i class="fa-solid fa-image me-1"></i> Blob Media</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Orders" asp-action="Index"><i class="fa-solid fa-list-check me-1"></i> Queue Orders</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Logs" asp-action="Index"><i class="fa-solid fa-file-lines me-1"></i> File Logs</a>
-                        </li>
-                    </ul>
-                </div>
+
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-sparkles me-2"></i>ABC Retail
+                </a>
             </div>
         </nav>
     </header>
 
-    <div class="container my-4">
+    <!-- Side Menu Drawer (With Footer) -->
+    <div class="offcanvas offcanvas-start offcanvas-hk d-flex flex-column" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title" id="offcanvasNavbarLabel">
+                <i class="fa-solid fa-heart me-2"></i>Navigation Menu
+            </h5>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+
+        <div class="offcanvas-body flex-grow-1">
+            <nav class="nav flex-column">
+                <a class="drawer-nav-link" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-house me-3 fs-5" style="color: var(--hk-dark-pink);"></i> Dashboard
+                </a>
+                <a class="drawer-nav-link" asp-controller="Profiles" asp-action="Index">
+                    <i class="fa-solid fa-address-card me-3 fs-5" style="color: var(--hk-dark-pink);"></i> Customer Profiles
+                </a>
+                <a class="drawer-nav-link" asp-controller="Products" asp-action="Index">
+                    <i class="fa-solid fa-boxes-packing me-3 fs-5" style="color: var(--hk-dark-pink);"></i> Product Catalog
+                </a>
+                <a class="drawer-nav-link" asp-controller="Orders" asp-action="Index">
+                    <i class="fa-solid fa-truck-fast me-3 fs-5" style="color: var(--hk-dark-pink);"></i> Inventory Manager
+                </a>
+                <a class="drawer-nav-link" asp-controller="Logs" asp-action="Index">
+                    <i class="fa-solid fa-clipboard-check me-3 fs-5" style="color: var(--hk-dark-pink);"></i> System Logs
+                </a>
+            </nav>
+        </div>
+
+        <!-- Drawer Footer Area -->
+        <div class="p-3">
+            <div class="drawer-footer text-center">
+                <p class="mb-1 fw-bold text-dark-pink" style="color: var(--hk-dark-pink); font-size: 0.9rem;">
+                    <i class="fa-solid fa-cloud me-1"></i> Azure Storage Operations
+                </p>
+                <small class="text-muted d-block" style="font-size: 0.75rem;">
+                    Status: <span class="badge bg-success rounded-pill">Connected</span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-auto">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="text-center">
+    <footer class="text-center mt-auto">
         <div class="container">
-            <small>&copy; 2026 - ABC Retail - Azure Storage Portal <i class="fa-solid fa-heart text-danger ms-1"></i></small>
+            <small>&copy; 2026 - ABC Retail - Operations Portal <i class="fa-solid fa-heart text-danger ms-1"></i></small>
         </div>
     </footer>
 

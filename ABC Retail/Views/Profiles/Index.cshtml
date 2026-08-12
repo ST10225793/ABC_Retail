@@ -1,0 +1,92 @@
+﻿@model IEnumerable<ABC_Retail.Models.CustomerProfile>
+
+@{
+    ViewData["Title"] = "Customer Profiles";
+}
+
+<div class="container py-3">
+
+    <!-- Title & Intro -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: var(--hk-dark-pink);">
+            <i class="fa-solid fa-address-card me-2"></i>Customer Profiles
+        </h2>
+        <p class="text-muted">Register and review shoppers in the store network[cite: 1].</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Registration Form Card -->
+        <div class="col-lg-5">
+            <div class="card hk-card p-4">
+                <h5 class="fw-bold mb-3" style="color: var(--hk-dark-pink);">
+                    <i class="fa-solid fa-user-plus me-2"></i>Add New Customer
+                </h5>
+                <form asp-action="Create" method="post">
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">First Name</label>
+                        <input name="FirstName" class="form-control rounded-3" placeholder="e.g. Koketso" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Last Name</label>
+                        <input name="LastName" class="form-control rounded-3" placeholder="e.g. Masasanya" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Email Address</label>
+                        <input name="Email" type="email" class="form-control rounded-3" placeholder="name@example.com" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Phone Number</label>
+                        <input name="PhoneNumber" class="form-control rounded-3" placeholder="0821234567" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Shipping Address</label>
+                        <input name="Address" class="form-control rounded-3" placeholder="Street, City, Province" required />
+                    </div>
+                    <button type="submit" class="btn hk-btn w-100 mt-2">
+                        <i class="fa-solid fa-floppy-disk me-2"></i>Save Customer Profile
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Customer Records Table -->
+        <div class="col-lg-7">
+            <div class="card hk-card p-3">
+                <h5 class="fw-bold mb-3" style="color: var(--hk-dark-pink);">
+                    <i class="fa-solid fa-users me-2"></i>Registered Shoppers (5+ Records)
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: var(--hk-card-bg); color: var(--hk-text);">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td><strong>@item.FirstName @item.LastName</strong></td>
+                                    <td><small>@item.Email</small></td>
+                                    <td><small>@item.PhoneNumber</small></td>
+                                    <td><small>@item.Address</small></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

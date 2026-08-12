@@ -11,6 +11,26 @@ namespace ABC_Retail.Controllers
             return View();
         }
 
+        public IActionResult Profiles()
+        {
+            return RedirectToAction("Index", "Profiles");
+        }
+
+        public IActionResult Products()
+        {
+            return RedirectToAction("Index", "Products");
+        }
+
+        public IActionResult Inventory()
+        {
+            return RedirectToAction("Index", "Orders");
+        }
+
+        public IActionResult Logs()
+        {
+            return RedirectToAction("Index", "Logs");
+        }
+
         public IActionResult Privacy()
         {
             return View();

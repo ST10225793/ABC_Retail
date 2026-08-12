@@ -7,4 +7,8 @@
     <RootNamespace>ABC_Retail</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
+  </ItemGroup>
+
 </Project>

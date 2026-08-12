@@ -2,69 +2,147 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center my-4">
-    <h1 class="display-4 fw-bold" style="color: var(--hk-dark-pink);">
-        <i class="fa-solid fa-ribbon me-2"></i>ABC Retail Storage Dashboard
-    </h1>
-    <p class="lead" style="color: var(--hk-text);">
-        Management hub for Azure Storage Services[cite: 1]. Select a service below to process and view data records[cite: 1].
-    </p>
-</div>
+<!-- Dashboard Wrapper Centered Vertical & Horizontal -->
+<div class="d-flex flex-column align-items-center justify-content-center min-vh-75 py-4">
 
-<div class="row g-4 mt-2">
-    <!-- Table Storage Card -->
-    <div class="col-md-6 col-lg-3">
-        <div class="card hk-card h-100 p-3 text-center">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div>
-                    <i class="fa-solid fa-table-cells fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
-                    <h5 class="card-title fw-bold">Azure Tables</h5>
-                    <p class="card-text text-muted small">Store customer profiles and product details[cite: 1].</p>
-                </div>
-                <a asp-controller="Profiles" asp-action="Index" class="btn hk-btn mt-3">Manage Tables</a>
-            </div>
-        </div>
+    <div class="text-center mb-5 max-w-750">
+        <h1 class="display-4 fw-bold" style="color: var(--hk-dark-pink);">
+            <i class="fa-solid fa-sparkles me-2"></i>ABC Retail Management Hub
+        </h1>
+        <p class="lead" style="color: var(--hk-text);">
+            Welcome to your central store workspace. Easily view shoppers, update product listings, track order dispatching, and audit system activity from one place.
+        </p>
     </div>
+    </div> 
 
-    <!-- Blob Storage Card -->
-    <div class="col-md-6 col-lg-3">
-        <div class="card hk-card h-100 p-3 text-center">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div>
-                    <i class="fa-solid fa-photo-film fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
-                    <h5 class="card-title fw-bold">Azure Blobs</h5>
-                    <p class="card-text text-muted small">Upload and display product images and multimedia[cite: 1].</p>
+    <!-- Centered 4-Card Layout -->
+    <div class="row g-4 justify-content-center w-100 max-w-1000">
+
+        <!-- Customer Profiles -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card hk-card h-100 p-3 text-center">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fa-solid fa-address-card fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
+                        <h5 class="card-title fw-bold">Customer Profiles</h5>
+                        <p class="card-text text-muted small">
+                            View registered customer accounts, update contact details, and manage profile records.
+                        </p>
+                    </div>
+                    <a asp-controller="Profiles" asp-action="Index" class="btn hk-btn mt-3">View Profiles</a>
                 </div>
-                <a asp-controller="Media" asp-action="Index" class="btn hk-btn mt-3">Manage Media</a>
             </div>
         </div>
-    </div>
 
-    <!-- Queue Storage Card -->
-    <div class="col-md-6 col-lg-3">
-        <div class="card hk-card h-100 p-3 text-center">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div>
-                    <i class="fa-solid fa-truck-ramp-box fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
-                    <h5 class="card-title fw-bold">Azure Queues</h5>
-                    <p class="card-text text-muted small">Queue order transactions and processing updates[cite: 1].</p>
+        <!-- Product Catalog -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card hk-card h-100 p-3 text-center">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fa-solid fa-boxes-packing fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
+                        <h5 class="card-title fw-bold">Product Catalog</h5>
+                        <p class="card-text text-muted small">
+                            Browse store items, update pricing, and upload high-resolution product photos.
+                        </p>
+                    </div>
+                    <a asp-controller="Products" asp-action="Index" class="btn hk-btn mt-3">View Products</a>
                 </div>
-                <a asp-controller="Orders" asp-action="Index" class="btn hk-btn mt-3">Manage Queues</a>
             </div>
         </div>
-    </div>
 
-    <!-- File Storage Card -->
-    <div class="col-md-6 col-lg-3">
-        <div class="card hk-card h-100 p-3 text-center">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <div>
-                    <i class="fa-solid fa-folder-open fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
-                    <h5 class="card-title fw-bold">Azure Files</h5>
-                    <p class="card-text text-muted small">Upload and access system log files by filename[cite: 1].</p>
+        <!-- Inventory Manager -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card hk-card h-100 p-3 text-center">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fa-solid fa-truck-fast fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
+                        <h5 class="card-title fw-bold">Inventory Manager</h5>
+                        <p class="card-text text-muted small">
+                            Monitor incoming orders, track queue processing, and manage stock distribution.
+                        </p>
+                    </div>
+                    <a asp-controller="Orders" asp-action="Index" class="btn hk-btn mt-3">View Inventory</a>
                 </div>
-                <a asp-controller="Logs" asp-action="Index" class="btn hk-btn mt-3">Manage Logs</a>
             </div>
         </div>
+
+        <!-- System Logs -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card hk-card h-100 p-3 text-center">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <div>
+                        <i class="fa-solid fa-clipboard-check fa-3x mb-3" style="color: var(--hk-dark-pink);"></i>
+                        <h5 class="card-title fw-bold">System Logs</h5>
+                        <p class="card-text text-muted small">
+                            Access operational log files, review system activity, and track performance.
+                        </p>
+                    </div>
+                    <a asp-controller="Logs" asp-action="Index" class="btn hk-btn mt-3">View Logs</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Online Orders Tracker Table -->
+        <div class="w-100 max-w-1000">
+            <div class="card hk-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" style="color: var(--hk-dark-pink);">
+                        <i class="fa-solid fa-receipt me-2"></i>Recent Online Orders Activity
+                    </h5>
+                    <a asp-controller="Orders" asp-action="Index" class="btn btn-sm hk-btn">Full Queue Manager</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: var(--hk-card-bg); color: var(--hk-text);">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>#ORD-1001</strong></td>
+                                <td>Koketso M.</td>
+                                <td>Hello Kitty Plushie</td>
+                                <td><span class="badge bg-warning text-dark">Processing Queue</span></td>
+                                <td>2026-08-12</td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-1002</strong></td>
+                                <td>Sarah J.</td>
+                                <td>Pink Ceramic Mug</td>
+                                <td><span class="badge bg-success">Dispatched</span></td>
+                                <td>2026-08-12</td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-1003</strong></td>
+                                <td>Alex K.</td>
+                                <td>Pastel Backpack</td>
+                                <td><span class="badge bg-info text-dark">Pending Upload</span></td>
+                                <td>2026-08-11</td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-1004</strong></td>
+                                <td>Lesedi T.</td>
+                                <td>Cute Desk Lamp</td>
+                                <td><span class="badge bg-success">Dispatched</span></td>
+                                <td>2026-08-10</td>
+                            </tr>
+                            <tr>
+                                <td><strong>#ORD-1005</strong></td>
+                                <td>John D.</td>
+                                <td>Soft Blanket</td>
+                                <td><span class="badge bg-secondary">Archived</span></td>
+                                <td>2026-08-09</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
     </div>
 </div>
