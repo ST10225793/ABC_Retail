@@ -31,9 +31,18 @@ namespace ABC_Retail.Services
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             var blobClient = _blobContainerClient.GetBlobClient(fileName);
 
+            // Set the HTTP headers so the browser recognizes it as an image
+            var blobHttpHeaders = new Azure.Storage.Blobs.Models.BlobHttpHeaders
+            {
+                ContentType = file.ContentType // e.g., "image/jpeg" or "image/png"
+            };
+
             using (var stream = file.OpenReadStream())
             {
-                await blobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = file.ContentType });
+                await blobClient.UploadAsync(stream, new Azure.Storage.Blobs.Models.BlobUploadOptions
+                {
+                    HttpHeaders = blobHttpHeaders
+                });
             }
 
             return blobClient.Uri.ToString();
