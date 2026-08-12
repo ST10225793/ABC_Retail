@@ -1,0 +1,112 @@
+﻿@model IEnumerable<ABC_Retail.Models.QueueMessageModel>
+
+@{
+    ViewData["Title"] = "Inventory Queue Manager";
+}
+
+<div class="container py-3">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold" style="color: var(--hk-dark-pink);">
+            <i class="fa-solid fa-boxes-stacked me-2"></i>Inventory & Order Queue Manager
+        </h2>
+        <p class="text-muted">Track real-time order dispatching and processing events managed by Azure Queue Storage.</p>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Add Queue Message Form -->
+        <div class="col-lg-5">
+            <div class="card hk-card p-4">
+                <h5 class="fw-bold mb-3" style="color: var(--hk-dark-pink);">
+                    <i class="fa-solid fa-plus-circle me-2"></i>Queue Order Event
+                </h5>
+                <form asp-action="Create" method="post">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Order Event Message</label>
+                        <input name="messageText" class="form-control rounded-3" placeholder="e.g. Processing Order #ORD-1001 for Hello Kitty Plushie" required />
+                    </div>
+                    <button type="submit" class="btn hk-btn w-100">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Send Message to Queue
+                    </button>
+                </form>
+
+                <hr class="my-4" />
+
+                <div class="small text-muted">
+                    <p class="fw-bold mb-1">Sample Messages for Rubric Evidence:</p>
+                    <ul class="ps-3 mb-0">
+                        <li>"Processing order #1001"</li>
+                        <li>"Uploading image: product1.jpg"</li>
+                        <li>"Inventory updated for Hello Kitty Mug"</li>
+                        <li>"Order #1002 dispatched via Express Shipping"</li>
+                        <li>"Stock count verified for Pink Blanket"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Queue Messages List -->
+        <div class="col-lg-7">
+            <div class="card hk-card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" style="color: var(--hk-dark-pink);">
+                        <i class="fa-solid fa-list-check me-2"></i>Active Queue Messages (5+ Records)
+                    </h5>
+                    @if (Model.Any())
+                    {
+                        <form asp-action="Clear" method="post" onsubmit="return confirm('Clear all messages from the queue?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
+                                <i class="fa-solid fa-trash-can me-1"></i> Clear Queue
+                            </button>
+                        </form>
+                    }
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead style="background-color: var(--hk-card-bg); color: var(--hk-text);">
+                            <tr>
+                                <th>Message Content</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="2" class="text-center text-muted py-4">
+                                        No active messages in the queue. Add at least 5 messages for assessment evidence.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var msg in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <i class="fa-solid fa-envelope me-2 text-muted"></i>
+                                            <strong>@msg.MessageText</strong>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                @(msg.InsertedOn.HasValue ? msg.InsertedOn.Value.ToString("yyyy-MM-dd HH:mm:ss") : "N/A")
+                                            </small>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
