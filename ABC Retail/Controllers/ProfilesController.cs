@@ -13,6 +13,13 @@ namespace ABC_Retail.Controllers
             _tableService = tableService;
         }
 
+        // GET: Fetch all customer profiles for the main table view
+        public async Task<IActionResult> Index()
+        {
+            var profiles = await _tableService.GetAllCustomersAsync();
+            return View(profiles);
+        }
+
         // GET: Fetch existing customer details for editing
         public async Task<IActionResult> Edit(string id)
         {
@@ -46,15 +53,6 @@ namespace ABC_Retail.Controllers
             return View("Index", profiles);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
-        {
-            await _tableService.DeleteCustomerAsync(partitionKey, rowKey);
-            TempData["SuccessMessage"] = "Customer profile deleted successfully!";
-            return RedirectToAction(nameof(Index));
-        }
-
         // POST: Save updated customer details back to Azure Table Storage
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -68,6 +66,16 @@ namespace ABC_Retail.Controllers
             }
 
             return View(profile);
+        }
+
+        // POST: Delete customer profile from Azure Table Storage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(string partitionKey, string rowKey)
+        {
+            await _tableService.DeleteCustomerAsync(partitionKey, rowKey);
+            TempData["SuccessMessage"] = "Customer profile deleted successfully!";
+            return RedirectToAction(nameof(Index));
         }
     }
 }
