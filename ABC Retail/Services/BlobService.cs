@@ -14,10 +14,10 @@ namespace ABC_Retail.Services
         {
             var connectionString = configuration.GetConnectionString("AzureStorage");
 
-            // Setup Azure Blob Storage Container
+            // Setup Azure Blob Storage Container without forcing public access on creation
             var blobServiceClient = new BlobServiceClient(connectionString);
             _blobContainerClient = blobServiceClient.GetBlobContainerClient("product-images");
-            _blobContainerClient.CreateIfNotExists(PublicAccessType.Blob);
+            _blobContainerClient.CreateIfNotExists(); // Removed PublicAccessType parameter
 
             // Setup Azure Table Storage Client for Products
             var tableServiceClient = new TableServiceClient(connectionString);
