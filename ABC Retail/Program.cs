@@ -1,5 +1,8 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// Register Azure Table Storage Service
+builder.Services.AddSingleton<ABC_Retail.Services.TableService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

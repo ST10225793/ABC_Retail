@@ -4,16 +4,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ABC_Retail.Models
 {
-    public class CustomerProfile
+    public class CustomerProfile : ITableEntity
     {
-        // Azure Table mandatory properties
-        public string PartitionKey { get; set; } = "Customer"; // Grouping key
-        public string RowKey { get; set; } // Unique Identifier (e.g., Email or ID)
-
+        // Required by Azure ITableEntity
+        public string PartitionKey { get; set; } = "Customer";
+        public string RowKey { get; set; } = Guid.NewGuid().ToString("N");
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
-        // Customer Specific Attributes
+        // Custom properties
         [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; } = string.Empty;
