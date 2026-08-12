@@ -87,5 +87,44 @@ namespace ABC_Retail.Services
                 await blobClient.DeleteIfExistsAsync();
             }
         }
+
+        // Retrieve a single product by PartitionKey and RowKey
+        public async Task<Product?> GetProductAsync(string partitionKey, string rowKey)
+        {
+            try
+            {
+                var response = await _productTableClient.GetEntityAsync<Product>(partitionKey, rowKey);
+                return response.Value;
+            }
+            catch (Azure.RequestFailedException)
+            {
+                return null;
+            }
+        }
+
+        // Update existing product metadata and optionally replace its image
+        public async Task UpdateProductAsync(Product product, IFormFile? newImageFile)
+        {
+            product.PartitionKey = "Product";
+
+            if (newImageFile != null && newImageFile.Length > 0)
+            {
+                // 1. Delete old image from Blob Storage if it exists
+                if (!string.IsNullOrEmpty(product.ImageUrl))
+                {
+                    var uri = new Uri(product.ImageUrl);
+                    var oldFileName = Path.GetFileName(uri.LocalPath);
+                    var oldBlobClient = _blobContainerClient.GetBlobClient(oldFileName);
+                    await oldBlobClient.DeleteIfExistsAsync();
+                }
+
+                // 2. Upload new image and assign new URL
+                string newImageUrl = await UploadImageAsync(newImageFile);
+                product.ImageUrl = newImageUrl;
+            }
+
+            // 3. Update entity in Azure Table Storage
+            await _productTableClient.UpdateEntityAsync(product, product.ETag, TableUpdateMode.Replace);
+        }
     }
 }

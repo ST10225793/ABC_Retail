@@ -34,7 +34,7 @@ namespace ABC_Retail.Controllers
                 // Save product record to Azure Table Storage
                 await _blobService.AddProductAsync(product);
 
-                TempData["SuccessMessage"] = "Product uploaded and saved to Azure Storage successfully!";
+                TempData["SuccessMessage"] = "Product uploaded and saved!";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -50,6 +50,38 @@ namespace ABC_Retail.Controllers
             await _blobService.DeleteProductAsync(partitionKey, rowKey, imageUrl);
             TempData["SuccessMessage"] = "Product and image deleted successfully!";
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Products/Edit/{id}
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var product = await _blobService.GetProductAsync("Product", id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        // POST: Products/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Product product, IFormFile? imageFile)
+        {
+            if (ModelState.IsValid)
+            {
+                await _blobService.UpdateProductAsync(product, imageFile);
+                TempData["SuccessMessage"] = "Product updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(product);
         }
     }
 }
