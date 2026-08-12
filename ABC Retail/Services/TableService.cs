@@ -43,5 +43,25 @@ namespace ABC_Retail.Services
         {
             await _tableClient.DeleteEntityAsync(partitionKey, rowKey);
         }
+
+        public async Task<CustomerProfile?> GetCustomerAsync(string partitionKey, string rowKey)
+        {
+            try
+            {
+                var response = await _tableClient.GetEntityAsync<CustomerProfile>(partitionKey, rowKey);
+                return response.Value;
+            }
+            catch (Azure.RequestFailedException)
+            {
+                return null;
+            }
+        }
+
+        // Update an existing customer entity in Azure Table Storage
+        public async Task UpdateCustomerAsync(CustomerProfile profile)
+        {
+            profile.PartitionKey = "Customer";
+            await _tableClient.UpdateEntityAsync(profile, profile.ETag, TableUpdateMode.Replace);
+        }
     }
 }

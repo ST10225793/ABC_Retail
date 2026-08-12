@@ -13,11 +13,21 @@ namespace ABC_Retail.Controllers
             _tableService = tableService;
         }
 
-        // GET: Fetch real customer records from Azure Table Storage
-        public async Task<IActionResult> Index()
+        // GET: Fetch existing customer details for editing
+        public async Task<IActionResult> Edit(string id)
         {
-            var profiles = await _tableService.GetAllCustomersAsync();
-            return View(profiles);
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var profile = await _tableService.GetCustomerAsync("Customer", id);
+            if (profile == null)
+            {
+                return NotFound();
+            }
+
+            return View(profile);
         }
 
         // POST: Save new customer profile into Azure Table Storage
@@ -43,6 +53,21 @@ namespace ABC_Retail.Controllers
             await _tableService.DeleteCustomerAsync(partitionKey, rowKey);
             TempData["SuccessMessage"] = "Customer profile deleted successfully!";
             return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Save updated customer details back to Azure Table Storage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(CustomerProfile profile)
+        {
+            if (ModelState.IsValid)
+            {
+                await _tableService.UpdateCustomerAsync(profile);
+                TempData["SuccessMessage"] = "Customer profile updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(profile);
         }
     }
 }
