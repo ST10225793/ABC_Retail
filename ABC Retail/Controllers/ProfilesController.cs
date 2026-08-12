@@ -7,10 +7,12 @@ namespace ABC_Retail.Controllers
     public class ProfilesController : Controller
     {
         private readonly TableService _tableService;
+        private readonly QueueService _queueService;
 
-        public ProfilesController(TableService tableService)
+        public ProfilesController(TableService tableService, QueueService queueService)
         {
             _tableService = tableService;
+            _queueService = queueService;
         }
 
         // GET: Fetch all customer profiles for the main table view
@@ -29,6 +31,11 @@ namespace ABC_Retail.Controllers
             if (ModelState.IsValid)
             {
                 await _tableService.AddCustomerAsync(profile);
+
+                // Automated Queue Event
+                string logMsg = $"Processing customer registration: {profile.FirstName} {profile.LastName}";
+                await _queueService.SendMessageAsync(logMsg);
+
                 TempData["SuccessMessage"] = "Customer profile successfully saved!";
                 return RedirectToAction(nameof(Index));
             }
@@ -45,6 +52,11 @@ namespace ABC_Retail.Controllers
             if (ModelState.IsValid)
             {
                 await _tableService.UpdateCustomerAsync(profile);
+
+                // Automated Queue Event
+                string logMsg = $"Updated profile details for {profile.FirstName} {profile.LastName}";
+                await _queueService.SendMessageAsync(logMsg);
+
                 TempData["SuccessMessage"] = "Customer profile updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -58,6 +70,10 @@ namespace ABC_Retail.Controllers
         public async Task<IActionResult> Delete(string partitionKey, string rowKey)
         {
             await _tableService.DeleteCustomerAsync(partitionKey, rowKey);
+
+            // Automated Queue Event
+            await _queueService.SendMessageAsync($"Deleted customer profile ID: {rowKey}");
+
             TempData["SuccessMessage"] = "Customer profile deleted successfully!";
             return RedirectToAction(nameof(Index));
         }

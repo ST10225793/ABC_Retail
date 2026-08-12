@@ -9,7 +9,7 @@
         <h2 class="fw-bold" style="color: var(--hk-dark-pink);">
             <i class="fa-solid fa-boxes-stacked me-2"></i>Inventory & Order Queue Manager
         </h2>
-        <p class="text-muted">Track real-time order dispatching and processing events managed by Azure Queue Storage.</p>
+        <p class="text-muted">Track real-time order dispatching and processing events.</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -57,7 +57,7 @@
             <div class="card hk-card p-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0" style="color: var(--hk-dark-pink);">
-                        <i class="fa-solid fa-list-check me-2"></i>Active Queue Messages (5+ Records)
+                        <i class="fa-solid fa-list-check me-2"></i>Active Queue Messages
                     </h5>
                     @if (Model.Any())
                     {

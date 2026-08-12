@@ -7,10 +7,12 @@ namespace ABC_Retail.Controllers
     public class ProductsController : Controller
     {
         private readonly BlobService _blobService;
+        private readonly QueueService _queueService;
 
-        public ProductsController(BlobService blobService)
+        public ProductsController(BlobService blobService, QueueService queueService)
         {
             _blobService = blobService;
+            _queueService = queueService;
         }
 
         // GET: Fetch all products and display catalog
@@ -34,6 +36,10 @@ namespace ABC_Retail.Controllers
                 // Save product record to Azure Table Storage
                 await _blobService.AddProductAsync(product);
 
+                // Automated Queue Events
+                await _queueService.SendMessageAsync($"Uploading image: {imageFile.FileName}");
+                await _queueService.SendMessageAsync($"Inventory updated for product: {product.Name}");
+
                 TempData["SuccessMessage"] = "Product uploaded and saved!";
                 return RedirectToAction(nameof(Index));
             }
@@ -48,7 +54,11 @@ namespace ABC_Retail.Controllers
         public async Task<IActionResult> Delete(string partitionKey, string rowKey, string imageUrl)
         {
             await _blobService.DeleteProductAsync(partitionKey, rowKey, imageUrl);
-            TempData["SuccessMessage"] = "Product and image deleted successfully!";
+
+            // Automated Queue Event
+            await _queueService.SendMessageAsync($"Removed product ID: {rowKey} from inventory");
+
+            TempData["SuccessMessage"] = "Product deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
 
@@ -77,6 +87,13 @@ namespace ABC_Retail.Controllers
             if (ModelState.IsValid)
             {
                 await _blobService.UpdateProductAsync(product, imageFile);
+
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    await _queueService.SendMessageAsync($"Uploading image: {imageFile.FileName}");
+                }
+                await _queueService.SendMessageAsync($"Updated product details for {product.Name}");
+
                 TempData["SuccessMessage"] = "Product updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
