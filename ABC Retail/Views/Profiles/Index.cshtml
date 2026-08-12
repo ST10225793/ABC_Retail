@@ -88,9 +88,6 @@
                                             <a asp-action="Edit" asp-route-id="@item.RowKey" class="btn btn-sm btn-outline-primary me-1 rounded-pill">
                                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                                             </a>
-                                            <a asp-action="Edit" asp-route-id="@item.RowKey" class="btn btn-sm btn-outline-primary me-1 rounded-pill">
-                                                <i class="fa-solid fa-pen-to-square"></i> Edit
-                                            </a>
                                             <form asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this profile?');">
                                                 <input type="hidden" name="partitionKey" value="@item.PartitionKey" />
                                                 <input type="hidden" name="rowKey" value="@item.RowKey" />

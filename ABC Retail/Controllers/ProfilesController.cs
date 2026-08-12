@@ -20,22 +20,6 @@ namespace ABC_Retail.Controllers
             return View(profiles);
         }
 
-        // GET: Fetch existing customer details for editing
-        public async Task<IActionResult> Edit(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return NotFound();
-            }
-
-            var profile = await _tableService.GetCustomerAsync("Customer", id);
-            if (profile == null)
-            {
-                return NotFound();
-            }
-
-            return View(profile);
-        }
 
         // POST: Save new customer profile into Azure Table Storage
         [HttpPost]
