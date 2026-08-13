@@ -52,7 +52,7 @@ namespace ABC_Retail.Controllers
         public async Task<IActionResult> GenerateAuditLog()
         {
             string fileName = await _fileService.GenerateAndUploadAuditLogAsync();
-            TempData["SuccessMessage"] = $"System audit log '{fileName}' generated and saved to Azure Files!";
+            TempData["SuccessMessage"] = $"System audit log '{fileName}' generated and saved!";
             return RedirectToAction(nameof(Index));
         }
     }

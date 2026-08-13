@@ -8,11 +8,12 @@ namespace ABC_Retail.Controllers
     {
         private readonly TableService _tableService;
         private readonly QueueService _queueService;
-
-        public ProfilesController(TableService tableService, QueueService queueService)
+        private readonly AuditLogService _auditLog;
+        public ProfilesController(TableService tableService, QueueService queueService, AuditLogService auditLog)
         {
             _tableService = tableService;
             _queueService = queueService;
+            _auditLog = auditLog;
         }
 
         // GET: Fetch all customer profiles for the main table view
@@ -52,6 +53,9 @@ namespace ABC_Retail.Controllers
                 string logMsg = $"Processing customer registration: {profile.FirstName} {profile.LastName}";
                 await _queueService.SendMessageAsync(logMsg);
 
+                // Automated Audit Log Entry
+                _auditLog.LogAction("CUSTOMER", $"Created customer profile for {profile.FirstName} {profile.LastName} ({profile.Email})");
+
                 TempData["SuccessMessage"] = "Customer profile successfully saved!";
                 return RedirectToAction(nameof(Index));
             }
@@ -73,6 +77,9 @@ namespace ABC_Retail.Controllers
                 string logMsg = $"Updated profile details for {profile.FirstName} {profile.LastName}";
                 await _queueService.SendMessageAsync(logMsg);
 
+                // Automated Audit Log Entry
+                _auditLog.LogAction("CUSTOMER", $"Updated profile details for {profile.FirstName} {profile.LastName} ({profile.Email})");
+
                 TempData["SuccessMessage"] = "Customer profile updated successfully!";
                 return RedirectToAction(nameof(Index));
             }
@@ -89,6 +96,9 @@ namespace ABC_Retail.Controllers
 
             // Automated Queue Event
             await _queueService.SendMessageAsync($"Deleted customer profile ID: {rowKey}");
+
+            // Automated Audit Log Entry
+            _auditLog.LogAction("CUSTOMER", $"Deleted customer profile with ID: {rowKey}");
 
             TempData["SuccessMessage"] = "Customer profile deleted successfully!";
             return RedirectToAction(nameof(Index));

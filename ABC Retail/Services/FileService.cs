@@ -7,12 +7,14 @@ namespace ABC_Retail.Services
     public class FileService
     {
         private readonly ShareClient _shareClient;
+        private readonly AuditLogService _auditLog;
 
-        public FileService(IConfiguration configuration)
+        public FileService(IConfiguration configuration, AuditLogService auditLog)
         {
             var connectionString = configuration.GetConnectionString("AzureStorage");
             _shareClient = new ShareClient(connectionString, "system-logs");
             _shareClient.CreateIfNotExists();
+            _auditLog = auditLog;
         }
 
         // Upload log file or contract to Azure File Share
@@ -61,28 +63,28 @@ namespace ABC_Retail.Services
         // Generates a structured system audit log file and uploads it to Azure Files
         public async Task<string> GenerateAndUploadAuditLogAsync()
         {
-            var fileName = $"system_audit_{DateTime.UtcNow:yyyy-MM-dd_HHmmss}.txt";
+            var fileName = $"system_audit_{DateTime.Now:yyyy-MM-dd_HHmmss}.txt";
             var directory = _shareClient.GetRootDirectoryClient();
             var fileClient = directory.GetFileClient(fileName);
 
-            // Build the system log content
             var logContent = new System.Text.StringBuilder();
-            logContent.AppendLine($"==================================================");
-            logContent.AppendLine($"         ABC RETAIL SYSTEM AUDIT LOG             ");
-            logContent.AppendLine($"  Generated On: {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC");
-            logContent.AppendLine($"==================================================");
+            logContent.AppendLine("==================================================");
+            logContent.AppendLine("         ABC RETAIL LIVE SYSTEM AUDIT LOG         ");
+            logContent.AppendLine($"  Generated On: {DateTime.Now:yyyy-MM-dd HH:mm:ss} SAST");
+            logContent.AppendLine("==================================================");
             logContent.AppendLine();
-            logContent.AppendLine($"[INFO] Storage Services Initialized successfully.");
-            logContent.AppendLine($"[AUDIT] Azure Table Storage connected (CustomerProfiles & Products).");
-            logContent.AppendLine($"[AUDIT] Azure Blob Storage connected (product-images container).");
-            logContent.AppendLine($"[AUDIT] Azure Queue Storage active (order-processing queue).");
-            logContent.AppendLine($"[AUDIT] Azure File Share connected (system-logs share).");
-            logContent.AppendLine($"[SECURITY] Public anonymous access policy verified.");
-            logContent.AppendLine($"[SYSTEM] Daily transaction and inventory sync complete.");
+
+            // Stream live recorded user activities
+            var liveLogs = _auditLog.GetLogs();
+            foreach (var log in liveLogs)
+            {
+                logContent.AppendLine(log);
+            }
+
             logContent.AppendLine();
-            logContent.AppendLine($"==================================================");
-            logContent.AppendLine($"               END OF AUDIT REPORT                ");
-            logContent.AppendLine($"==================================================");
+            logContent.AppendLine("==================================================");
+            logContent.AppendLine("               END OF AUDIT REPORT                ");
+            logContent.AppendLine("==================================================");
 
             byte[] bytes = System.Text.Encoding.UTF8.GetBytes(logContent.ToString());
 
@@ -93,6 +95,6 @@ namespace ABC_Retail.Services
             }
 
             return fileName;
-        }
+        }   
     }
 }

@@ -9,6 +9,8 @@ builder.Services.AddSingleton<ABC_Retail.Services.QueueService>();
 
 builder.Services.AddSingleton<ABC_Retail.Services.FileService>();
 
+builder.Services.AddSingleton<ABC_Retail.Services.AuditLogService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 

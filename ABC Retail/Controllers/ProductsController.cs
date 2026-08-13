@@ -8,11 +8,12 @@ namespace ABC_Retail.Controllers
     {
         private readonly BlobService _blobService;
         private readonly QueueService _queueService;
-
-        public ProductsController(BlobService blobService, QueueService queueService)
+        private readonly AuditLogService _auditLog;
+        public ProductsController(BlobService blobService, QueueService queueService, AuditLogService auditLog)
         {
             _blobService = blobService;
             _queueService = queueService;
+            _auditLog = auditLog;
         }
 
         // GET: Fetch all products and display catalog
@@ -39,6 +40,8 @@ namespace ABC_Retail.Controllers
                 // Automated Queue Events
                 await _queueService.SendMessageAsync($"Uploading image: {imageFile.FileName}");
                 await _queueService.SendMessageAsync($"Inventory updated for product: {product.Name}");
+
+                _auditLog.LogAction("CATALOG", $"Uploaded product '{product.Name}' priced at R{product.Price}");
 
                 TempData["SuccessMessage"] = "Product uploaded and saved!";
                 return RedirectToAction(nameof(Index));
@@ -117,6 +120,8 @@ namespace ABC_Retail.Controllers
                 string actionType = changeAmount < 0 ? "DISPATCH / DECREASE" : "RESTOCK / INCREASE";
                 string queueMsg = $"STOCK_ADJUSTMENT | Item: {product.Name} | Action: {actionType} ({changeAmount}) | Remaining Stock: {product.StockQuantity}";
                 await _queueService.SendMessageAsync(queueMsg);
+
+                _auditLog.LogAction("INVENTORY", $"Stock changed for '{product.Name}'. New balance: {product.StockQuantity} units");
 
                 TempData["SuccessMessage"] = $"Stock updated for {product.Name}! Queue event triggered.";
             }
