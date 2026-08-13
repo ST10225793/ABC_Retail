@@ -13,7 +13,10 @@
         // Record a real activity in the system
         public void LogAction(string category, string message)
         {
-            string entry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{category.ToUpper()}] {message}";
+            TimeZoneInfo sastTimeZone = TimeZoneInfo.FindSystemTimeZoneById("South Africa Standard Time");
+            DateTime sastNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, sastTimeZone);
+
+            string entry = $"[{sastNow:yyyy-MM-dd_HHmmss}] [{category.ToUpper()}] {message}";
             _logEntries.Add(entry);
         }
 

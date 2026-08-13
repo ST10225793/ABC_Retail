@@ -63,14 +63,18 @@ namespace ABC_Retail.Services
         // Generates a structured system audit log file and uploads it to Azure Files
         public async Task<string> GenerateAndUploadAuditLogAsync()
         {
-            var fileName = $"system_audit_{DateTime.Now:yyyy-MM-dd_HHmmss}.txt";
+            // Define South Africa Standard Time zone (UTC+2)
+            TimeZoneInfo sastTimeZone = TimeZoneInfo.FindSystemTimeZoneById("South Africa Standard Time");
+            DateTime sastNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, sastTimeZone);
+
+            var fileName = $"system_audit_{sastNow:yyyy-MM-dd_HHmmss}.txt";
             var directory = _shareClient.GetRootDirectoryClient();
             var fileClient = directory.GetFileClient(fileName);
 
             var logContent = new System.Text.StringBuilder();
             logContent.AppendLine("==================================================");
             logContent.AppendLine("         ABC RETAIL LIVE SYSTEM AUDIT LOG         ");
-            logContent.AppendLine($"  Generated On: {DateTime.Now:yyyy-MM-dd HH:mm:ss} SAST");
+            logContent.AppendLine($"  Generated On: {sastNow:yyyy-MM-dd HH:mm:ss} SAST");
             logContent.AppendLine("==================================================");
             logContent.AppendLine();
 
